@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { userRoutes } = require("./routes/users");
 const { cardRoutes } = require("./routes/cards");
+const { NOT_FOUND } = require("./utils/errors");
 
 async function start() {
   try {
@@ -28,6 +29,10 @@ const { PORT = 3000 } = process.env;
 app.use(userRoutes);
 
 app.use(cardRoutes);
+
+app.use("*", (req, res, next) => {
+  res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });
+});
 
 app.listen(PORT, () => {
   console.log(`server listen on port ${PORT}`);

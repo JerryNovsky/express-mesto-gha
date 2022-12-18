@@ -25,11 +25,8 @@ module.exports.getUserById = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
       }
     });
 };
@@ -64,11 +61,8 @@ module.exports.updateUserInfo = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
       }
     });
 };
@@ -83,11 +77,8 @@ module.exports.updateUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
       }
     });
 };

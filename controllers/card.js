@@ -43,11 +43,8 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: Card not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       }
     });
 };
@@ -65,11 +62,8 @@ module.exports.putLikeCard = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: Card not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       }
     });
 };
@@ -87,11 +81,8 @@ module.exports.removeLikeCard = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: Card not found` });
-      }
-      if (err.message === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       }
     });
 };

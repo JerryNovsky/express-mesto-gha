@@ -1,10 +1,10 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
 const {
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
   NOT_FOUND,
-} = require("../utils/errors");
+} = require('../utils/errors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -18,24 +18,17 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: `${NOT_FOUND} - User not found` });
-      }
-      return res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
-    });
+  .orFail(new Error('NotValidId'))
+  .then((user) => {
+    res.status(200).send(user);
+  })
+  .catch((err) => {
+    if (err.message === 'NotValidId') {
+      res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
+    } else {
+      res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
+    }
+  });
 };
 
 module.exports.createUser = (req, res) => {
@@ -43,7 +36,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         return res
           .status(BAD_REQUEST)
           .send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
@@ -59,7 +52,7 @@ module.exports.updateUserInfo = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {
@@ -70,7 +63,7 @@ module.exports.updateUserInfo = (req, res) => {
       return res.send({ user });
     })
     .catch((err) => {
-      if (err.name === "CastError" || err.name === "ValidationError") {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(BAD_REQUEST).send({
           message: `${BAD_REQUEST} - Validation error`,
         });
@@ -93,7 +86,7 @@ module.exports.updateUserAvatar = (req, res) => {
       return res.send({ user });
     })
     .catch((err) => {
-      if (err.name === "CastError" || err.name === "ValidationError") {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         return res.status(BAD_REQUEST).send({
           message: `${BAD_REQUEST} - Validation error`,
         });

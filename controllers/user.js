@@ -63,8 +63,8 @@ module.exports.updateUserInfo = (req, res) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR)
-          .send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST)
+          .send({ message: `ERROR ${BAD_REQUEST}: Server error` });
       }
     });
 };
@@ -80,8 +80,8 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR)
-          .send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+        res.status(BAD_REQUEST)
+          .send({ message: `ERROR ${BAD_REQUEST}: Server error` });
       }
     });
 };

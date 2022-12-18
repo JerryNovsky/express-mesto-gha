@@ -44,7 +44,7 @@ module.exports.deleteCard = (req, res) => {
       if (err.message === 'NotValidId') {
         res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: Card not found` });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
+        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
       }
     });
 };

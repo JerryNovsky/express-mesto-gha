@@ -8,6 +8,10 @@ const {
   NOT_FOUND,
 } = require('../utils/errors');
 
+const { ForbiddenError, forbiddenMessage } = require('../utils/ForbiddenError');
+const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
+const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
@@ -34,19 +38,29 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(new Error('NotValidId'))
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
-      res.status(200).send(card);
+      if (!card) {
+        throw new NotFoundError(notFoundMessage);
+      } if (card.owner._id.toString() !== req.user._id) {
+        throw new ForbiddenError(forbiddenMessage);
+      }
+      Card.findByIdAndDelete(req.params.cardId)
+        .then((myCard) => res.send(myCard))
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return next(new BadRequestError(badRequestMessage));
+          }
+          return next(err);
+        });
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: Card not found` });
-      } else {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError(badRequestMessage));
       }
-    });
+      return next(err);
+});
 };
 
 module.exports.putLikeCard = (req, res) => {

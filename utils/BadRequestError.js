@@ -1,0 +1,10 @@
+class BadRequestError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 400;
+  }
+}
+
+const badRequestMessage = 'Bad Request';
+
+module.exports = { BadRequestError, badRequestMessage };

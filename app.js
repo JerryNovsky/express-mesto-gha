@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 const { userRoutes } = require('./routes/users');
 const { cardRoutes } = require('./routes/cards');
 const { NOT_FOUND } = require('./utils/errors');
+const { login, createUser } = require('./controllers/user');
+const auth = require('./middlewares/auth');
 
 async function start() {
   try {
@@ -29,19 +31,15 @@ app.use(limiter);
 
 start();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6395fa72fa8e06ecf995b0f9',
-  };
-
-  next();
-});
-
 const { PORT = 3000 } = process.env;
 
 app.use(userRoutes);
-
 app.use(cardRoutes);
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });

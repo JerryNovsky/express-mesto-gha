@@ -2,21 +2,28 @@ const express = require('express');
 const {
   getUsers,
   getUserById,
-  createUser,
   updateUserInfo,
   updateUserAvatar,
+  getCurrentUser,
 } = require('../controllers/user');
+
+const {
+  updateUserInfoValidation,
+  updateAvatarValidation,
+  getUserByIdValidation,
+} = require('../middlewares/validation')
+
 
 const userRoutes = express.Router();
 
 userRoutes.get('/users', getUsers);
 
-userRoutes.get('/users/:userId', getUserById);
+userRoutes.get('/users/:userId', getUserByIdValidation, getUserById);
 
-userRoutes.post('/users', createUser);
+userRoutes.patch('/users/me', updateUserInfoValidation, updateUserInfo);
 
-userRoutes.patch('/users/me', updateUserInfo);
+userRoutes.patch('/users/me/avatar', updateAvatarValidation, updateUserAvatar);
 
-userRoutes.patch('/users/me/avatar', updateUserAvatar);
+userRoutes.get('/users/me', getCurrentUser);
 
 module.exports = { userRoutes };

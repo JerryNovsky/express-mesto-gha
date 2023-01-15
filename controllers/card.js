@@ -60,7 +60,7 @@ module.exports.deleteCard = (req, res, next) => {
         return next(new BadRequestError(badRequestMessage));
       }
       return next(err);
-});
+    });
 };
 
 module.exports.putLikeCard = (req, res) => {

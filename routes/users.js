@@ -11,8 +11,7 @@ const {
   updateUserInfoValidation,
   updateAvatarValidation,
   getUserByIdValidation,
-} = require('../middlewares/validation')
-
+} = require('../middlewares/validation');
 
 const userRoutes = express.Router();
 

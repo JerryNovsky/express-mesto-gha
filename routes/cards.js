@@ -20,7 +20,7 @@ cardRoutes.get('/cards', getCards);
 
 cardRoutes.post('/cards', createCardValidation, createCard);
 
-cardRoutes.delete('/cards/:cardId', deleteCardValidation);
+cardRoutes.delete('/cards/:cardId', deleteCardValidation, deleteCard);
 
 cardRoutes.put('/cards/:cardId/likes', putLikeCardValidation, putLikeCard);
 

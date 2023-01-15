@@ -9,6 +9,7 @@ const { cardRoutes } = require('./routes/cards');
 const { NOT_FOUND } = require('./utils/errors');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
+const { signUpValidation, signInValidation } = require('./middlewares/validation');
 
 async function start() {
   try {
@@ -38,8 +39,8 @@ const { PORT = 3000 } = process.env;
 app.use(userRoutes);
 app.use(cardRoutes);
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', signInValidation, login);
+app.post('/signup', signUpValidation, createUser);
 
 app.use(auth);
 

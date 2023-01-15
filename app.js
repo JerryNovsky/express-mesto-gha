@@ -2,7 +2,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const { errors } = require('celebrate');
 const { userRoutes } = require('./routes/users');
 const { cardRoutes } = require('./routes/cards');
 const { NOT_FOUND } = require('./utils/errors');
@@ -28,6 +30,8 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);
+app.use(cookieParser);
+app.use(errors());
 
 start();
 

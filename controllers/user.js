@@ -8,6 +8,9 @@ const {
   NOT_FOUND,
 } = require('../utils/errors');
 
+const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
+const { EmailError, emailMessage } = require('../utils/EmailError');
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
@@ -33,7 +36,7 @@ module.exports.getUserById = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -45,13 +48,12 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: `ERROR ${BAD_REQUEST}: Validation error` });
+        return next(new BadRequestError(badRequestMessage));
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
+      if (err.code === 11000) {
+        return next(new EmailError(emailMessage));
+      }
+      return next(err);
     });
 };
 

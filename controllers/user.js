@@ -1,38 +1,30 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-
-const {
-  BAD_REQUEST,
-  INTERNAL_SERVER_ERROR,
-  NOT_FOUND,
-} = require('../utils/errors');
-
 const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
 const { EmailError, emailMessage } = require('../utils/EmailError');
+const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => {
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: `ERROR ${INTERNAL_SERVER_ERROR}: Server error` });
-    });
+    .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        throw new NotFoundError(notFoundMessage);
+      }
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      } else {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError(badRequestMessage));
       }
+      return next(err);
     });
 };
 
@@ -57,39 +49,41 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.updateUserInfo = (req, res) => {
+module.exports.updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        throw new NotFoundError(notFoundMessage);
+      }
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      } else {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        return next(new BadRequestError(badRequestMessage));
       }
+      return next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-    .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        throw new NotFoundError(notFoundMessage);
+      }
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      } else {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        return next(new BadRequestError(badRequestMessage));
       }
+      return next(err);
     });
 };
 
@@ -108,17 +102,18 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        throw new NotFoundError(notFoundMessage);
+      }
+      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') {
-        res.status(NOT_FOUND).send({ message: `ERROR ${NOT_FOUND}: User not found` });
-      } else {
-        res.status(BAD_REQUEST).send({ message: `ERROR ${BAD_REQUEST}: Server error` });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError(badRequestMessage));
       }
+      return next(err);
     });
 };

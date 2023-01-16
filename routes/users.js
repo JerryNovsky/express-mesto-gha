@@ -10,14 +10,14 @@ const {
 const {
   updateUserInfoValidation,
   updateAvatarValidation,
-  getUserByIdValidation,
-} = require('../middlewares/validation');
+  idUserValidation,
+} = require('../validators/user');
 
 const userRoutes = express.Router();
 
 userRoutes.get('/users', getUsers);
 
-userRoutes.get('/users/:userId', getUserByIdValidation, getUserById);
+userRoutes.get('/users/:userId', idUserValidation, getUserById);
 
 userRoutes.patch('/users/me', updateUserInfoValidation, updateUserInfo);
 

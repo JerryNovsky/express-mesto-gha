@@ -33,7 +33,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw new ForbiddenError(forbiddenMessage);
       }
       Card.findByIdAndDelete(req.params.cardId)
-        .then((myCard) => res.send(myCard))
+        .then((myCard) => res.send({ data: myCard }))
         .catch((err) => {
           if (err.name === 'CastError') {
             return next(new BadRequestError(badRequestMessage));

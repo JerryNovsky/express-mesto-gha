@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
@@ -27,10 +28,19 @@ const limiter = rateLimit({
 });
 
 const app = express();
+
+mongoose.set({ runValidators: true });
+
+app.use(bodyParser.json());
+
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 app.use(errors());
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
+  next();
+});
 
 start();
 
@@ -41,8 +51,8 @@ app.use(cardRoutes);
 
 app.post('/signin', signInValidation, login);
 app.post('/signup', createUserValidation, createUser);
-
 app.use(auth);
+
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });

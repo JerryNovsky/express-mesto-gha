@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { urlRegExp } = require('../utils/regExp');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (link) => urlRegExp.test(link),
+      message: () => 'Введите URL',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +26,6 @@ const cardSchema = new mongoose.Schema({
     default: [],
   },
   createdAt: { type: Date, default: Date.now },
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('card', cardSchema);

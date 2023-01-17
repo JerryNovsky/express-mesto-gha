@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { urlRegExp } = require('../utils/regExp');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,6 +20,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (link) => urlRegExp.test(link),
+      message: () => 'Аватар должен быть URL-ссылкой',
+    },
   },
   email: {
     type: String,
@@ -36,9 +41,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 8,
   },
-});
+}, { versionKey: false });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email })
     .then((user) => {
       if (!user) {
@@ -50,7 +55,6 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           if (!matched) {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
-
           return user;
         });
     });

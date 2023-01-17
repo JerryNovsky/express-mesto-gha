@@ -53,7 +53,6 @@ app.post('/signin', signInValidation, login);
 app.post('/signup', createUserValidation, createUser);
 app.use(auth);
 
-
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });
 });

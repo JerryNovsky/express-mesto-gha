@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-empty */
 /* eslint-disable no-lone-blocks */
-const { Card } = require('../models/card');
+const Card = require('../models/card');
 const { ForbiddenError, forbiddenMessage } = require('../utils/ForbiddenError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');

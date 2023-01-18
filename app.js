@@ -9,7 +9,7 @@ const { userRoutes } = require('./routes/users');
 const { cardRoutes } = require('./routes/cards');
 const { NOT_FOUND } = require('./utils/errors');
 const { login, createUser } = require('./controllers/user');
-const auth = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 const { signInValidation, createUserValidation } = require('./validators/user');
 
 async function start() {
@@ -28,7 +28,6 @@ const limiter = rateLimit({
 });
 
 const app = express();
-
 mongoose.set({ runValidators: true });
 
 app.use(bodyParser.json());
@@ -36,7 +35,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);
-app.use(errors());
+
 app.use((err, req, res, next) => {
   res.status(err.statusCode).send({ message: err.message });
   next();
@@ -52,6 +51,7 @@ app.use(cardRoutes);
 app.post('/signin', signInValidation, login);
 app.post('/signup', createUserValidation, createUser);
 app.use(auth);
+app.use(errors());
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });

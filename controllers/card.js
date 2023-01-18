@@ -1,26 +1,29 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-empty */
 /* eslint-disable no-lone-blocks */
-const Card = require('../models/card');
+const { Card } = require('../models/card');
 const { ForbiddenError, forbiddenMessage } = require('../utils/ForbiddenError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
+const { InternalServerError, serverMessage } = require('../utils/InternalServerError');
+const { HttpError } = require('../utils/HttpError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((card) => res.send({ data: card }))
-    .catch(next);
+    .then((cards) => res.send({ data: cards }))
+    .catch(() => next(new InternalServerError(serverMessage)));
 };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError(badRequestMessage));
+        next(new BadRequestError(badRequestMessage));
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };
 
@@ -29,23 +32,24 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundError(notFoundMessage);
-      } if (card.owner._id.toString() !== req.user._id) {
+      } else if (req.user._id !== card.owner.toString()) {
         throw new ForbiddenError(forbiddenMessage);
+      } else {
+        return card.remove()
+          .then(() => card);
       }
-      Card.findByIdAndDelete(req.params.cardId)
-        .then((myCard) => res.send({ data: myCard }))
-        .catch((err) => {
-          if (err.name === 'CastError') {
-            return next(new BadRequestError(badRequestMessage));
-          }
-          return next(err);
-        });
+    })
+    .then((card) => {
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError(badRequestMessage));
+        next(new BadRequestError(badRequestMessage));
+      } else if (err instanceof HttpError) {
+        next(err);
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };
 
@@ -57,15 +61,17 @@ module.exports.putLikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(notFoundMessage);
+        next(new NotFoundError(notFoundMessage));
+      } else {
+        res.send({ data: card });
       }
-      res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return next(new BadRequestError(badRequestMessage));
+      if (err.name === 'CastError') {
+        next(new BadRequestError(badRequestMessage));
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };
 
@@ -77,14 +83,16 @@ module.exports.removeLikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(notFoundMessage);
+        next(new NotFoundError(notFoundMessage));
+      } else {
+        res.send({ data: card });
       }
-      res.status(200).send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return next(new BadRequestError(badRequestMessage));
+      if (err.name === 'CastError') {
+        next(new BadRequestError(badRequestMessage));
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };

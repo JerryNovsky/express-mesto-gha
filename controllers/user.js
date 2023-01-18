@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const { User } = require('../models/user');
 const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
 const { EmailError, emailMessage } = require('../utils/EmailError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
@@ -14,18 +14,19 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail(new Error('NotValidId'))
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError(notFoundMessage);
+      if (user) {
+        res.send({ data: user });
+      } else {
+        next(new NotFoundError(notFoundMessage));
       }
-      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError(badRequestMessage));
+        next(new BadRequestError(badRequestMessage));
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };
 
@@ -45,7 +46,7 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы неверные данные'));
+        next(new BadRequestError(badRequestMessage));
       } else if (err.code === 11000) {
         next(new EmailError(emailMessage));
       } else {
@@ -65,12 +66,12 @@ module.exports.updateUserInfo = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        next(new NotFoundError('Данный пользователь не найден'));
+        next(new NotFoundError(notFoundMessage));
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Указанные данные неверны'));
+        next(new BadRequestError(badRequestMessage));
       } else {
         next(new InternalServerError(serverMessage));
       }
@@ -81,16 +82,18 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError(notFoundMessage);
+      if (user) {
+        res.send({ data: user });
+      } else {
+        next(new NotFoundError(notFoundMessage));
       }
-      return res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return next(new BadRequestError(badRequestMessage));
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(badRequestMessage));
+      } else {
+        next(new InternalServerError(serverMessage));
       }
-      return next(err);
     });
 };
 
@@ -120,7 +123,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       if (user) {
         res.send({ data: user });
       } else {
-        next(new NotFoundError('Данный пользователь не найден'));
+        next(new NotFoundError(notFoundMessage));
       }
     })
     .catch(() => {

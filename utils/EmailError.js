@@ -5,6 +5,6 @@ class EmailError extends Error {
   }
 }
 
-const emailMessage = 'this email is already registered';
+const emailMessage = 'Пользователь с такой почтой уже зарегистрирован';
 
 module.exports = { EmailError, emailMessage };

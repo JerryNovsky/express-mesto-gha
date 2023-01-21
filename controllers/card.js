@@ -32,24 +32,25 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         throw new NotFoundError(notFoundMessage);
-      } else if (req.user._id !== card.owner.toString()) {
-        throw new ForbiddenError(forbiddenMessage);
-      } else {
-        return card.remove()
-          .then(() => card);
       }
-    })
-    .then((card) => {
-      res.send(card);
+
+      if (card.owner._id.toString() !== req.user._id) {
+        throw new ForbiddenError(forbiddenMessage);
+      }
+      Card.findByIdAndDelete(req.params.cardId)
+        .then((mycard) => res.send({ data: mycard }))
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return next(new BadRequestError(badRequestMessage));
+          }
+          return next(err);
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(badRequestMessage));
-      } else if (err instanceof HttpError) {
-        next(err);
-      } else {
-        next(new InternalServerError(serverMessage));
+        return next(new BadRequestError(badRequestMessage));
       }
+      return next(err);
     });
 };
 

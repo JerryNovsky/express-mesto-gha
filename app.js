@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
 const { userRoutes } = require('./routes/users');
 const { cardRoutes } = require('./routes/cards');
-const { NOT_FOUND } = require('./utils/errors');
+const { NotFoundError } = require('./utils/NotFoundError');
 const { login, createUser } = require('./controllers/user');
 const { auth } = require('./middlewares/auth');
 const { signInValidation, createUserValidation } = require('./validators/user');
@@ -50,7 +50,7 @@ app.use(cardRoutes);
 app.use(errors());
 
 app.use('*', (req, res) => {
-  res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });
+  res.status(NotFoundError).send({ message: `${NotFoundError} - Страница не найдена` });
 });
 
 app.use((err, req, res, next) => {

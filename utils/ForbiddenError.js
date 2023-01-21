@@ -5,6 +5,6 @@ class ForbiddenError extends Error {
   }
 }
 
-const forbiddenMessage = 'It is not your card';
+const forbiddenMessage = 'Вы не можете удалять чужие карточки';
 
 module.exports = { ForbiddenError, forbiddenMessage };

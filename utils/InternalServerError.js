@@ -5,6 +5,6 @@ class InternalServerError extends Error {
   }
 }
 
-const serverMessage = 'Internal Server Error';
+const serverMessage = 'Ошибка сервера';
 
 module.exports = { InternalServerError, serverMessage };

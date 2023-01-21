@@ -5,6 +5,6 @@ class NotFoundError extends Error {
   }
 }
 
-const notFoundMessage = 'Card is not found';
+const notFoundMessage = 'Карточка не найдена';
 
 module.exports = { NotFoundError, notFoundMessage };

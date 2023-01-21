@@ -12,6 +12,20 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user) {
+        res.send({ data: user });
+      } else {
+        next(new NotFoundError(notFoundMessage));
+      }
+    })
+    .catch(() => {
+      next(new InternalServerError(serverMessage));
+    });
+};
+
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
@@ -80,13 +94,13 @@ module.exports.updateUserInfo = (req, res, next) => {
 
 module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  const userId = req.user._id;
+  User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if (user) {
-        res.send({ data: user });
-      } else {
-        next(new NotFoundError(notFoundMessage));
+      if (!user) {
+        throw new NotFoundError(notFoundMessage);
       }
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -103,7 +117,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'strong-key',
+        'secret-key',
         { expiresIn: '7d' },
       );
       res.send({ token });
@@ -114,19 +128,5 @@ module.exports.login = (req, res, next) => {
       } else {
         next(err);
       }
-    });
-};
-
-module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (user) {
-        res.send({ data: user });
-      } else {
-        next(new NotFoundError(notFoundMessage));
-      }
-    })
-    .catch(() => {
-      next(new InternalServerError(serverMessage));
     });
 };

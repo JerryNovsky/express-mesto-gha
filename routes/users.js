@@ -16,13 +16,9 @@ const {
 const userRoutes = express.Router();
 
 userRoutes.get('/users', getUsers);
-
-userRoutes.get('/users/:userId', idUserValidation, getUserById);
-
-userRoutes.patch('/users/me', updateUserInfoValidation, updateUserInfo);
-
-userRoutes.patch('/users/me/avatar', updateAvatarValidation, updateUserAvatar);
-
 userRoutes.get('/users/me', getCurrentUser);
+userRoutes.get('/users/:userId', idUserValidation, getUserById);
+userRoutes.patch('/users/me', updateUserInfoValidation, updateUserInfo);
+userRoutes.patch('/users/me/avatar', updateAvatarValidation, updateUserAvatar);
 
 module.exports = { userRoutes };

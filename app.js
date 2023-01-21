@@ -44,13 +44,14 @@ app.use((err, req, res, next) => {
 start();
 
 const { PORT = 3000 } = process.env;
+app.post('/signin', signInValidation, login);
+app.post('/signup', createUserValidation, createUser);
+
+app.use(auth);
 
 app.use(userRoutes);
 app.use(cardRoutes);
 
-app.post('/signin', signInValidation, login);
-app.post('/signup', createUserValidation, createUser);
-app.use(auth);
 app.use(errors());
 
 app.use('*', (req, res) => {

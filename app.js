@@ -36,11 +36,6 @@ app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
-  next();
-});
-
 start();
 
 const { PORT = 3000 } = process.env;
@@ -56,6 +51,11 @@ app.use(errors());
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({ message: `${NOT_FOUND} - Page not found` });
+});
+
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
+  next();
 });
 
 app.listen(PORT, () => {

@@ -9,7 +9,7 @@ const { InternalServerError, serverMessage } = require('../utils/InternalServerE
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(next);
+    .catch(() => next(new InternalServerError(serverMessage)));
 };
 
 module.exports.getCurrentUser = (req, res, next) => {

@@ -5,6 +5,6 @@ class UnauthorizedError extends Error {
   }
 }
 
-const authorizationErrorMessage = 'Authorization error';
+const authorizationErrorMessage = 'Ошибка авторизации';
 
 module.exports = { UnauthorizedError, authorizationErrorMessage };

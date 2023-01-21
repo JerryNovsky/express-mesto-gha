@@ -6,7 +6,6 @@ const { ForbiddenError, forbiddenMessage } = require('../utils/ForbiddenError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError');
 const { InternalServerError, serverMessage } = require('../utils/InternalServerError');
-const { HttpError } = require('../utils/HttpError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})

@@ -5,6 +5,7 @@ const { BadRequestError, badRequestMessage } = require('../utils/BadRequestError
 const { EmailError, emailMessage } = require('../utils/EmailError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 const { InternalServerError, serverMessage } = require('../utils/InternalServerError');
+const { UnauthorizedError, authorizationErrorMessage } = require('../utils/UnauthorizedError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -124,7 +125,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name !== 'UnauthorizedError') {
-        next(new InternalServerError(serverMessage));
+        next(new UnauthorizedError(authorizationErrorMessage));
       } else {
         next(err);
       }

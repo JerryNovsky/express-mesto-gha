@@ -5,6 +5,6 @@ class BadRequestError extends Error {
   }
 }
 
-const badRequestMessage = 'Bad Request';
+const badRequestMessage = 'Проверьте введенные данные';
 
 module.exports = { BadRequestError, badRequestMessage };

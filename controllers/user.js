@@ -6,6 +6,7 @@ const { EmailError, emailMessage } = require('../utils/EmailError');
 const { NotFoundError, notFoundMessage } = require('../utils/NotFoundError');
 const { InternalServerError, serverMessage } = require('../utils/InternalServerError');
 const { UnauthorizedError, authorizationErrorMessage } = require('../utils/UnauthorizedError');
+const { JWT_SECRET } = require('../utils/token');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -118,7 +119,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'secret-key',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
       res.send({ token });
